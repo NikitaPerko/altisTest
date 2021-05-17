@@ -12,21 +12,26 @@ namespace CityGenerator
             AnalyzisResult analyzisResult = new AnalyzisResult();
             _elements = elements;
 
-            float minEdgeSize = float.MaxValue;
+            Vector3 minBoundsSize = Vector3.one * float.MaxValue;
             float maxYValue = float.MinValue;
 
             foreach (var element in elements)
             {
                 Vector3 size = element.Mesh.bounds.size;
 
-                if (minEdgeSize > size.x)
+                if (minBoundsSize.x > size.x)
                 {
-                    minEdgeSize = size.x;
+                    minBoundsSize.x = size.x;
                 }
 
-                if (minEdgeSize > size.z)
+                if (minBoundsSize.y > size.y)
                 {
-                    minEdgeSize = size.z;
+                    minBoundsSize.y = size.y;
+                }
+
+                if (minBoundsSize.z > size.z)
+                {
+                    minBoundsSize.z = size.z;
                 }
 
                 if (maxYValue < size.y)
@@ -35,7 +40,7 @@ namespace CityGenerator
                 }
             }
 
-            analyzisResult.cellSize = minEdgeSize;
+            analyzisResult.minBoundsSize = minBoundsSize;
             analyzisResult.maxYSize = maxYValue;
             return analyzisResult;
         }

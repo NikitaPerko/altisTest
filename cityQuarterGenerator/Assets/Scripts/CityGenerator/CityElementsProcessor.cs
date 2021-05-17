@@ -35,11 +35,14 @@ namespace CityGenerator
                     Debug.LogError("Object does not have mesh");
                 }
 
+                var sharedMesh = meshFilters[0].sharedMesh;
+                var boundsSize = sharedMesh.bounds.size;
+                
                 var cityElement = new CityElement();
                 cityElement.Prefab = cityElementPrefab;
-                cityElement.Mesh = meshFilters[0].sharedMesh;
+                cityElement.Mesh = sharedMesh;
                 cityElement.CorrectYPos = GetCorrectPos(meshFilters[0], meshRenderers[0]);
-
+                cityElement.BoundingBoxVolume = boundsSize.x * boundsSize.y * boundsSize.z;
                 cityElements.Add(cityElement);
             }
             

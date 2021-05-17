@@ -1,8 +1,10 @@
+using UnityEngine;
+
 namespace CityGenerator
 {
     public class AnalyzisResult
     {
         public float maxYSize;
-        public float cellSize;
+        public Vector3 minBoundsSize;
     }
 }

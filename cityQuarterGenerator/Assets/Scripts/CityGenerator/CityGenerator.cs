@@ -33,8 +33,14 @@ namespace CityGenerator
             {
                 int randomIndex = Random.Range(0, elements.Count);
                 var objectInfo = elements[randomIndex];
-                var objectToPlace = Object.Instantiate(objectInfo.Prefab);
-                objectsToPlace.Add(new CityObject {Object = objectToPlace, objectInfo = objectInfo});
+                var objectToPlace = Object.Instantiate(objectInfo.Prefab, Vector3.one * 5 * Random.Range(0, 1f), Quaternion.identity);
+
+                objectsToPlace.Add(new CityObject
+                {
+                    Object = objectToPlace,
+                    objectInfo = objectInfo,
+                    MeshRenderer = objectToPlace.GetComponentsInChildren<MeshRenderer>()[0]
+                });
             }
 
             var analyzis = _cityElementsAnalyzer.Analyze(elements);
