@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MathUtils.Spreadsheet;
 using UnityEngine;
 
 namespace CityGenerator
@@ -6,29 +7,111 @@ namespace CityGenerator
     public class CityObjectsPlacer
     {
         private BoundsOctree<CityElement> _octree;
+        private TableSpaceFinderSpreadSheet _spreadsheet;
         private Vector3 minBoundsSize;
 
         public void PlaceObjects(float x, float y, List<CityObject> objectsToPlace, AnalyzisResult analyzisResult)
         {
-            objectsToPlace.Sort((a, b) => a.objectInfo.BoundingBoxVolume - b.objectInfo.BoundingBoxVolume < 0 ? -1 : 1);
+            objectsToPlace.Sort((a, b) =>
+            {
+                float diff = a.objectInfo.BoundingBoxVolume - b.objectInfo.BoundingBoxVolume;
+
+                if (diff > 0)
+                {
+                    return -1;
+                }
+
+                if (diff < 0)
+
+                {
+                    return 1;
+                }
+
+                return 0;
+            });
 
             minBoundsSize = analyzisResult.minBoundsSize;
+
+            CreateSpreadSheet(x, y, objectsToPlace.Count);
 
             _octree = new BoundsOctree<CityElement>(new Vector3(x, analyzisResult.maxYSize, y),
                 new Vector3(x / 2, analyzisResult.maxYSize / 2, y / 2), minBoundsSize, 1f);
 
-            foreach (var objectToPlace in objectsToPlace)
+            while (objectsToPlace.Count > 0 &&
+                   _spreadsheet.lastActiveRandomCellIndex < _spreadsheet.RandomActiveCells.Count)
             {
-                var bounds = objectToPlace.MeshRenderer.bounds;
+                bool finded = false;
+                var activeCell = _spreadsheet.GetRandomActiveCell();
 
-                if (!_octree.IsColliding(bounds))
+                CityObject objectToPlace = null;
+
+                for (var i = 0; i < objectsToPlace.Count; i++)
                 {
-                    _octree.Add(objectToPlace.objectInfo, bounds);
+                    objectToPlace = objectsToPlace[i];
+                    var objectTransform = objectToPlace.Object.transform;
+
+                    if (!activeCell.CellValue.IsActive)
+                    {
+                        Debug.LogError("Cell is not active");
+                    }
+
+                    Vector3 position = objectTransform.position;
+                    position.x = activeCell.CellValue.Position.x;
+                    position.y = objectToPlace.objectInfo.CorrectYPos;
+                    position.z = activeCell.CellValue.Position.y;
+
+                    objectTransform.position = position;
+                    var bounds = objectToPlace.MeshRenderer.bounds;
+
+                    if (!_octree.IsColliding(bounds))
+                    {
+                        var node = _octree.Add(objectToPlace.objectInfo, bounds);
+
+                        if (node != null)
+                        {
+                            finded = true;
+                            break;
+                        }
+                    }
                 }
-                else
+
+                if (finded)
                 {
-                    objectToPlace.Object.transform.position = Vector3.up * 1000;
+                    objectsToPlace.Remove(objectToPlace);
                 }
+
+                _spreadsheet.SetCellInactive(activeCell);
+            }
+
+            foreach (var obj in objectsToPlace)
+            {
+                obj.Object.transform.position = Vector3.one * 1000;
+            }
+        }
+
+        private void CreateSpreadSheet(float x, float y, int objectsCount)
+        {
+            float cellSize = 1 / (Mathf.Sqrt(x * y) * (objectsCount / 200f + 1));
+            int rowsCount = (int) (x / cellSize);
+            int columnsCount = (int) (y / cellSize);
+
+            _spreadsheet = new TableSpaceFinderSpreadSheet(rowsCount, columnsCount, cellSize);
+
+            float xCellPos = cellSize / 2;
+            float yCellPos = y - cellSize / 2;
+
+            for (int i = 0; i < _spreadsheet.RowsCount; i++)
+            {
+                float rowStartXCellPos = xCellPos;
+
+                for (int j = 0; j < _spreadsheet.ColumnsCount; j++)
+                {
+                    _spreadsheet.SetCellCenterPos(i, j, new Vector2(xCellPos, yCellPos));
+                    xCellPos += cellSize;
+                }
+
+                yCellPos -= cellSize;
+                xCellPos = rowStartXCellPos;
             }
         }
 
@@ -36,6 +119,7 @@ namespace CityGenerator
         {
             _octree?.DrawAllBounds();
             _octree?.DrawAllObjects();
+            _spreadsheet?.DrawGizmos();
         }
     }
 }

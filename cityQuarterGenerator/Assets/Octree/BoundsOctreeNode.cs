@@ -29,10 +29,7 @@ public class BoundsOctreeNode<T>
     // Child nodes, if any
     BoundsOctreeNode<T>[] children = null;
 
-    bool HasChildren
-    {
-        get { return children != null; }
-    }
+    bool HasChildren => children != null;
 
     // Bounds of potential children to this node. These are actual size (with looseness taken into account), not base size
     Bounds[] childBounds;
@@ -68,15 +65,14 @@ public class BoundsOctreeNode<T>
     /// <param name="obj">Object to add.</param>
     /// <param name="objBounds">3D bounding box around the object.</param>
     /// <returns>True if the object fits entirely within this node.</returns>
-    public bool Add(T obj, Bounds objBounds)
+    public BoundsOctreeNode<T> Add(T obj, Bounds objBounds)
     {
         if (!Encapsulates(bounds, objBounds))
         {
-            return false;
+            return null;
         }
 
-        SubAdd(obj, objBounds);
-        return true;
+        return SubAdd(obj, objBounds);
     }
 
     /// <summary>
@@ -560,7 +556,7 @@ public class BoundsOctreeNode<T>
     /// </summary>
     /// <param name="obj">Object to add.</param>
     /// <param name="objBounds">3D bounding box around the object.</param>
-    void SubAdd(T obj, Bounds objBounds)
+    BoundsOctreeNode<T> SubAdd(T obj, Bounds objBounds)
     {
         // We know it fits at this level if we've got this far
 
@@ -576,12 +572,11 @@ public class BoundsOctreeNode<T>
             {
                 OctreeObject newObj = new OctreeObject {Obj = obj, Bounds = objBounds};
                 objects.Add(newObj);
-                return; // We're done. No children yet
+                return this; // We're done. No children yet
             }
 
             // Fits at this level, but we can go deeper. Would it fit there?
             // Create the 8 children
-            int bestFitChild;
 
             if (children == null)
             {
@@ -590,7 +585,7 @@ public class BoundsOctreeNode<T>
                 if (children == null)
                 {
                     Debug.LogError("Child creation failed for an unknown reason. Early exit.");
-                    return;
+                    return null;
                 }
 
                 // Now that we have the new children, see if this node's existing objects would fit there
@@ -599,13 +594,13 @@ public class BoundsOctreeNode<T>
                     OctreeObject existingObj = objects[i];
                     // Find which child the object is closest to based on where the
                     // object's center is located in relation to the octree's center
-                    bestFitChild = BestFitChild(existingObj.Bounds.center);
+                    var bestFitChild = BestFitChild(existingObj.Bounds.center);
 
                     // Does it fit?
                     if (Encapsulates(children[bestFitChild].bounds, existingObj.Bounds))
                     {
-                        children[bestFitChild].SubAdd(existingObj.Obj, existingObj.Bounds); // Go a level deeper					
-                        objects.Remove(existingObj);                                        // Remove from here
+                        objects.Remove(existingObj);                                               // Remove from here
+                        return children[bestFitChild].SubAdd(existingObj.Obj, existingObj.Bounds); // Go a level deeper				
                     }
                 }
             }
@@ -616,13 +611,14 @@ public class BoundsOctreeNode<T>
 
         if (Encapsulates(children[bestFit].bounds, objBounds))
         {
-            children[bestFit].SubAdd(obj, objBounds);
+            return children[bestFit].SubAdd(obj, objBounds);
         }
         else
         {
             // Didn't fit in a child. We'll have to it to this node instead
             OctreeObject newObj = new OctreeObject {Obj = obj, Bounds = objBounds};
             objects.Add(newObj);
+            return this;
         }
     }
 

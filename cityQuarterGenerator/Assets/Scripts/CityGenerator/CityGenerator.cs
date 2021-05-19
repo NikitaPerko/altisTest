@@ -7,11 +7,10 @@ namespace CityGenerator
     {
         private float _x;
         private float _y;
-        private int _objectsCount;
 
-        private CityElementsAnalyzer _cityElementsAnalyzer;
-        private CityElementsProcessor _cityElementsProcessor;
-        private CityObjectsPlacer _cityObjectsPlacer;
+        private readonly CityElementsAnalyzer _cityElementsAnalyzer;
+        private readonly CityElementsProcessor _cityElementsProcessor;
+        private readonly CityObjectsPlacer _cityObjectsPlacer;
 
         public CityGenerator()
         {
@@ -24,16 +23,16 @@ namespace CityGenerator
         {
             _x = x;
             _y = y;
-            _objectsCount = n;
             var elements = _cityElementsProcessor.Process();
-            _cityElementsAnalyzer.Analyze(elements);
+            var analyzis = _cityElementsAnalyzer.Analyze(elements);
             List<CityObject> objectsToPlace = new List<CityObject>(n);
 
             for (int i = 0; i < n; i++)
             {
                 int randomIndex = Random.Range(0, elements.Count);
                 var objectInfo = elements[randomIndex];
-                var objectToPlace = Object.Instantiate(objectInfo.Prefab, Vector3.one * 5 * Random.Range(0, 1f), Quaternion.identity);
+
+                var objectToPlace = Object.Instantiate(objectInfo.Prefab, Vector3.one * 1000, Quaternion.identity);
 
                 objectsToPlace.Add(new CityObject
                 {
@@ -43,7 +42,6 @@ namespace CityGenerator
                 });
             }
 
-            var analyzis = _cityElementsAnalyzer.Analyze(elements);
             _cityObjectsPlacer.PlaceObjects(x, y, objectsToPlace, analyzis);
         }
 

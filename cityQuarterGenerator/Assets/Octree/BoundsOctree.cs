@@ -77,25 +77,17 @@ public class BoundsOctree<T>
     /// </summary>
     /// <param name="obj">Object to add.</param>
     /// <param name="objBounds">3D bounding box around the object.</param>
-    public void Add(T obj, Bounds objBounds)
+    public BoundsOctreeNode<T> Add(T obj, Bounds objBounds)
     {
-        // Add object or expand the octree until it can be added
-        int count = 0; // Safety check against infinite/excessive growth
+        var node = rootNode.Add(obj, objBounds);
 
-        while (!rootNode.Add(obj, objBounds))
+        if (node != null)
         {
-            Grow(objBounds.center - rootNode.Center);
-
-            if (++count > 20)
-            {
-                Debug.LogError("Aborted Add operation as it seemed to be going on forever (" +
-                               (count - 1) +
-                               ") attempts at growing the octree.");
-                return;
-            }
+            Count++;
+            return node;
         }
 
-        Count++;
+        return null;
     }
 
     /// <summary>
