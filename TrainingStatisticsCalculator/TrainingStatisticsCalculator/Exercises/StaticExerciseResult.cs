@@ -33,5 +33,10 @@ namespace TrainingCalculator.Exercises
             int totalTime = CalculateTotalTime();
             return totalTime * ExerciseInfo.CaloriesPerSecond;
         }
+
+        public override void CalculateCompletion()
+        {
+            PercentOfCompletion = MathUtils.Clamp01(CalculateTotalTime() / (float) ExerciseInfo.TargetSeconds);
+        }
     }
 }

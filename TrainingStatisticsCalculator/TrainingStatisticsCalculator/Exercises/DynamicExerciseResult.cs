@@ -7,7 +7,7 @@ namespace TrainingCalculator.Exercises
     public class DynamicExerciseResult : BaseExerciseResult
     {
         private List<DynamicSet> Sets { get; }
-        private DynamicExerciseInfo ExerciseInfo { get;}
+        private DynamicExerciseInfo ExerciseInfo { get; }
 
         public DynamicExerciseResult(List<DynamicSet> sets, DynamicExerciseInfo exerciseInfo)
         {
@@ -35,6 +35,12 @@ namespace TrainingCalculator.Exercises
         {
             int repetitionsCount = Sets.Sum(x => x.Repetitions.Count);
             return repetitionsCount * ExerciseInfo.CaloriesPerRepetition;
+        }
+
+        public override void CalculateCompletion()
+        {
+            int repetitionsCount = Sets.Sum(x => x.Repetitions.Count);
+            PercentOfCompletion = MathUtils.Clamp01(repetitionsCount / (float) ExerciseInfo.TargetRepetitionsCount);
         }
     }
 }
