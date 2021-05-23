@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +14,14 @@ public class FilterImage : MonoBehaviour
     [SerializeField]
     private Texture2D _texture2D;
 
+    [SerializeField]
+    private float treshholdToFilterPixels;
+
+    [SerializeField]
+    private float treshholdToMakePixelBlack;
+
     private const int filterSize = 8;
     private readonly Color[] _filteringPixels = new Color[filterSize];
-    private float treshhold = 0.1f;
 
     void Start()
     {
@@ -39,44 +45,60 @@ public class FilterImage : MonoBehaviour
 
     private void FilterPixel(int m, int k)
     {
-        int pixelsFilterBorder = 0;
+        int pixelsWithSmallTreshhold = 0;
         var centerPixel = _texture2D.GetPixel(m, k);
 
-        int count = 0;
-
-        for (int i = m - 1; i <= m + 1; i++)
+        if (centerPixel.r < treshholdToMakePixelBlack)
         {
-            for (int j = k - 1; j <= k + 1; j++)
+            _texture2D.SetPixel(m, k, Color.black);
+        }
+        else
+        {
+            int count = 0;
+
+            for (int i = m - 1; i <= m + 1; i++)
             {
-                if (i != m || j != k)
+                for (int j = k - 1; j <= k + 1; j++)
                 {
-                    if (i >= 0 && i < _texture2D.width && j >= 0 && j < _texture2D.height)
+                    if (i != m || j != k)
                     {
-                        var pixel = _texture2D.GetPixel(i, j);
-
-                        if (Mathf.Abs(pixel.r - centerPixel.r) < treshhold)
+                        if (i >= 0 && i < _texture2D.width && j >= 0 && j < _texture2D.height)
                         {
-                            pixelsFilterBorder++;
-                        }
+                            var pixel = _texture2D.GetPixel(i, j);
 
-                        _filteringPixels[count] = pixel;
-                        count++;
+                            if (Mathf.Abs(pixel.r - centerPixel.r) < treshholdToFilterPixels)
+                            {
+                                pixelsWithSmallTreshhold++;
+                            }
+
+                            _filteringPixels[count] = pixel;
+                            count++;
+                        }
                     }
                 }
             }
-        }
 
-        if (pixelsFilterBorder < 3)
-        {
-            var averagePixelValue = Color.black;
-
-            for (int i = 0; i < count; i++)
+            if (pixelsWithSmallTreshhold < 3)
             {
-                averagePixelValue += _filteringPixels[i];
-            }
+                var averagePixelValue = Color.black;
 
-            averagePixelValue /= count;
-            _texture2D.SetPixel(m, k, averagePixelValue);
+                for (int i = 0; i < count; i++)
+                {
+                    averagePixelValue += _filteringPixels[i];
+                }
+
+                if (count > 0)
+                {
+                    averagePixelValue /= count;
+                }
+
+                _texture2D.SetPixel(m, k, averagePixelValue);
+            }
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireCube(transform.position, Vector3.one);
     }
 }

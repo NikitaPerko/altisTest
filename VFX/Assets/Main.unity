@@ -230,7 +230,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 606654009}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -8.76}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -250,6 +250,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _visualEffect: {fileID: 606654011}
   _texture2D: {fileID: 2800000, guid: 72df8d22e1eb4c248a1dfc6076d005ce, type: 3}
+  treshholdToFilterPixels: 0.05
+  treshholdToMakePixelBlack: 0.05
 --- !u!1 &700151211
 GameObject:
   m_ObjectHideFlags: 0
@@ -304,7 +306,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 0.53
+  orthographic size: 0.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
