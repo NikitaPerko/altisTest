@@ -72,3 +72,6 @@ VFX/Logs/
 VFX/.idea/
 VFX/obj/
 VFX/LocalPackages/
+TrainingCalculator/TrainingCalculator/obj
+TrainingCalculator/.idea
+TrainingCalculator/TrainingCalculator/bin
