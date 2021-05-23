@@ -78,18 +78,23 @@ public class FilterImage : MonoBehaviour
                 }
             }
 
-            if (pixelsWithSmallTreshhold < 3)
+            if (pixelsWithSmallTreshhold < 4)
             {
                 var averagePixelValue = Color.black;
 
                 for (int i = 0; i < count; i++)
                 {
-                    averagePixelValue += _filteringPixels[i];
+                    averagePixelValue.r += _filteringPixels[i].r;
                 }
 
                 if (count > 0)
                 {
-                    averagePixelValue /= count;
+                    averagePixelValue.r /= count;
+                }
+
+                if (averagePixelValue.r < treshholdToMakePixelBlack)
+                {
+                    averagePixelValue.r = 0;
                 }
 
                 _texture2D.SetPixel(m, k, averagePixelValue);
