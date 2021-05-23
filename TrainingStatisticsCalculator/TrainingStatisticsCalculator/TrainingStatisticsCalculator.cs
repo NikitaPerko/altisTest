@@ -1,6 +1,6 @@
-namespace TrainingCalculator.TrainingCalculator
+namespace TrainingCalculator
 {
-    public class TrainingCalculator
+    public class TrainingStatisticsCalculator
     {
         public TrainingResult CalculateResult(Training training)
         {

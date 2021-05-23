@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace TrainingCalculator.TrainingCalculator.Sets
+namespace TrainingCalculator.Sets
 {
     public class DynamicSet : BaseSet
     {

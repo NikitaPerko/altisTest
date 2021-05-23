@@ -1,6 +1,4 @@
-using System;
-
-namespace TrainingCalculator.TrainingCalculator.Exercises
+namespace TrainingCalculator.Exercises
 {
     public abstract class BaseExerciseResult : ICalculatable, ITotalTimeCalculator, ICaloriesCalculator
     {

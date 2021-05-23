@@ -1,4 +1,4 @@
-namespace TrainingCalculator.TrainingCalculator.Sets
+namespace TrainingCalculator.Sets
 {
     public abstract class BaseSet : ICalculatable, ITotalTimeCalculator
     {

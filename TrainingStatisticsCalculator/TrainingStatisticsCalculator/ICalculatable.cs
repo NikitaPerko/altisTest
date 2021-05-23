@@ -1,4 +1,4 @@
-namespace TrainingCalculator.TrainingCalculator
+namespace TrainingCalculator
 {
     public interface ICalculatable
     {

@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
-using TrainingCalculator.TrainingCalculator.Sets;
+using TrainingCalculator.Sets;
 
-namespace TrainingCalculator.TrainingCalculator.Exercises
+namespace TrainingCalculator.Exercises
 {
     public class DynamicExerciseResult : BaseExerciseResult
     {
-        public List<DynamicSet> Sets { get; }
-        public DynamicExerciseInfo ExerciseInfo { get;}
+        private List<DynamicSet> Sets { get; }
+        private DynamicExerciseInfo ExerciseInfo { get;}
 
         public DynamicExerciseResult(List<DynamicSet> sets, DynamicExerciseInfo exerciseInfo)
         {

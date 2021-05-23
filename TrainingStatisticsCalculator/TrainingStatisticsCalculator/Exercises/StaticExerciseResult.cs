@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
-using TrainingCalculator.TrainingCalculator.Sets;
+using TrainingCalculator.Sets;
 
-namespace TrainingCalculator.TrainingCalculator.Exercises
+namespace TrainingCalculator.Exercises
 {
     public class StaticExerciseResult : BaseExerciseResult
     {
-        public List<StaticSet> Sets { get; }
-        public StaticExerciseInfo ExerciseInfo { get; }
+        private List<StaticSet> Sets { get; }
+        private StaticExerciseInfo ExerciseInfo { get; }
 
         public StaticExerciseResult(List<StaticSet> sets, StaticExerciseInfo exerciseInfo)
         {

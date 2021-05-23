@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using TrainingCalculator.TrainingCalculator.Exercises;
+using TrainingCalculator.Exercises;
 
-namespace TrainingCalculator.TrainingCalculator
+namespace TrainingCalculator
 {
     public class Training : ICalculatable, ITotalTimeCalculator, ICaloriesCalculator
     {

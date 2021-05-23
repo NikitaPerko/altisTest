@@ -1,0 +1,6 @@
+D:\work\altisTest\TrainingStatisticsCalculator\TrainingStatisticsCalculator\bin\Debug\TrainingStatisticsCalculator.dll
+D:\work\altisTest\TrainingStatisticsCalculator\TrainingStatisticsCalculator\bin\Debug\TrainingStatisticsCalculator.pdb
+D:\work\altisTest\TrainingStatisticsCalculator\TrainingStatisticsCalculator\obj\Debug\TrainingStatisticsCalculator.csprojAssemblyReference.cache
+D:\work\altisTest\TrainingStatisticsCalculator\TrainingStatisticsCalculator\obj\Debug\TrainingStatisticsCalculator.csproj.CoreCompileInputs.cache
+D:\work\altisTest\TrainingStatisticsCalculator\TrainingStatisticsCalculator\obj\Debug\TrainingStatisticsCalculator.dll
+D:\work\altisTest\TrainingStatisticsCalculator\TrainingStatisticsCalculator\obj\Debug\TrainingStatisticsCalculator.pdb

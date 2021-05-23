@@ -1,4 +1,4 @@
-namespace TrainingCalculator.TrainingCalculator.Exercises
+namespace TrainingCalculator.Exercises
 {
     public class StaticExerciseInfo : BaseExerciseInfo
     {

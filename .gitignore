@@ -75,3 +75,5 @@ VFX/LocalPackages/
 TrainingCalculator/TrainingCalculator/obj
 TrainingCalculator/.idea
 TrainingCalculator/TrainingCalculator/bin
+.idea/
+TrainingStatisticsCalculatorTests/packages/
