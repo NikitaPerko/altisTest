@@ -64,3 +64,11 @@ cityQuarterGenerator/Logs
 cityQuarterGenerator/Logs/
 cityQuarterGenerator/.idea/
 cityQuarterGenerator/obj/
+
+VFX/Library/
+VFX/Temp/
+VFX/Logs
+VFX/Logs/
+VFX/.idea/
+VFX/obj/
+VFX/LocalPackages/
