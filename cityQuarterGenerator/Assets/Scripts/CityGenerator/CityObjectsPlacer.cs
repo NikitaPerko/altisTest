@@ -38,9 +38,9 @@ namespace CityGenerator
                 new Vector3(x / 2, analyzisResult.maxYSize / 2, y / 2), minBoundsSize, 1f);
 
             int placedObjectIndex = 0;
+            Bounds bounds = new Bounds();
 
-            while (placedObjectIndex < objectsToPlace.Count &&
-                   _spreadsheet.lastActiveRandomCellIndex < _spreadsheet.RandomActiveCells.Count)
+            while (placedObjectIndex < objectsToPlace.Count && _spreadsheet.ActiveCellsCount > 0)
             {
                 bool finded = false;
                 var activeCell = _spreadsheet.GetRandomActiveCell();
@@ -63,7 +63,7 @@ namespace CityGenerator
                     position.z = activeCell.CellValue.Position.y;
 
                     objectTransform.position = position;
-                    var bounds = objectToPlace.MeshRenderer.bounds;
+                    bounds = objectToPlace.MeshRenderer.bounds;
 
                     if (!_octree.IsColliding(bounds))
                     {
@@ -83,9 +83,12 @@ namespace CityGenerator
                     objectsToPlace[i] = objectsToPlace[placedObjectIndex];
                     objectsToPlace[placedObjectIndex] = t;
                     placedObjectIndex++;
+                    _spreadsheet.SetCellsInactiveInRect(activeCell, new Vector2(bounds.size.x, bounds.size.z));
                 }
-
-                _spreadsheet.SetCellInactive(activeCell);
+                else
+                {
+                    _spreadsheet.SetCellInactive(activeCell);
+                }
             }
 
             for (var index = placedObjectIndex; index < objectsToPlace.Count; index++)

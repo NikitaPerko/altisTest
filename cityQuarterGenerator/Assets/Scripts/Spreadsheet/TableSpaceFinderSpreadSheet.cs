@@ -6,15 +6,13 @@ namespace MathUtils.Spreadsheet
     public class TableSpaceFinderSpreadSheet : Spreadsheet<SpaceFinderSpreadSheetCellValue>
     {
         private readonly float _cellSize;
-        public List<int> RandomActiveCells { get; private set; }
-
-        public int lastActiveRandomCellIndex;
+        public int ActiveCellsCount { get; private set; }
 
         public TableSpaceFinderSpreadSheet(int rowsCount, int columnsCount, float cellSize)
             : base(rowsCount, columnsCount)
         {
             _cellSize = cellSize;
-            RandomActiveCells = new List<int>(rowsCount * columnsCount);
+            ActiveCellsCount = rowsCount * columnsCount;
 
             for (int i = 0; i < RowsCount; i++)
             {
@@ -24,35 +22,20 @@ namespace MathUtils.Spreadsheet
                     {
                         RowIndex = i, ColumnIndex = j, CellValue = new SpaceFinderSpreadSheetCellValue()
                     });
-                    RandomActiveCells.Add(i * ColumnsCount + j);
                 }
             }
-
-            for (int i = 0; i < RandomActiveCells.Count; i++)
-            {
-                int randomIndex = Random.Range(0, RandomActiveCells.Count);
-                int temp = RandomActiveCells[i];
-                RandomActiveCells[i] = RandomActiveCells[randomIndex];
-                RandomActiveCells[randomIndex] = temp;
-            }
         }
 
-        public void SetCellInactive(int rowIndex, int columnIndex)
+        private void SetCellInactive(int rowIndex, int columnIndex)
         {
-            int index = rowIndex * ColumnsCount + columnIndex;
-            SetCellInactive(index);
-        }
-
-        public void SetCellInactive(int index)
-        {
-            SpreadsheetCell<SpaceFinderSpreadSheetCellValue> temp = Cells[index];
+            SpreadsheetCell<SpaceFinderSpreadSheetCellValue> temp = GetCell(rowIndex, columnIndex);
 
             var tempCellValue = temp.CellValue;
 
             if (tempCellValue.IsActive)
             {
                 tempCellValue.IsActive = false;
-                lastActiveRandomCellIndex++;
+                ActiveCellsCount--;
             }
         }
 
@@ -63,7 +46,19 @@ namespace MathUtils.Spreadsheet
 
         public SpreadsheetCell<SpaceFinderSpreadSheetCellValue> GetRandomActiveCell()
         {
-            return GetCell(RandomActiveCells[lastActiveRandomCellIndex]);
+            int randomIndex = Random.Range(0, Cells.Count);
+            var cell = GetCell(randomIndex);
+            int index = randomIndex;
+            int attempts = 0;
+
+            while (!cell.CellValue.IsActive && attempts < Cells.Count)
+            {
+                index = (index + 1) % Cells.Count;
+                cell = GetCell(index);
+                attempts++;
+            }
+
+            return cell;
         }
 
         /*public List<SpreadsheetCell<SpaceFinderSpreadSheetCellValue>> GetCellsOfRadiusFromCell(
@@ -121,8 +116,62 @@ namespace MathUtils.Spreadsheet
             }
 
             return cells;
+        }*/
+
+        public void SetCellsInactiveInRect(SpreadsheetCell<SpaceFinderSpreadSheetCellValue> cell, Vector2 size)
+        {
+            int indexXOffset = Mathf.CeilToInt(size.x / 2 / _cellSize);
+            int indexYOffset = Mathf.CeilToInt(size.y / 2 / _cellSize);
+            int rowStart = cell.RowIndex - indexYOffset;
+
+            if (rowStart < 0)
+            {
+                rowStart = 0;
+            }
+
+            int columnStart = cell.ColumnIndex - indexXOffset;
+
+            if (columnStart < 0)
+            {
+                columnStart = 0;
+            }
+
+            int rowEnd = cell.RowIndex + indexYOffset;
+
+            if (rowEnd > RowsCount - 1)
+            {
+                rowEnd = RowsCount - 1;
+            }
+
+            int columnEnd = cell.ColumnIndex + indexXOffset;
+
+            if (columnEnd > ColumnsCount - 1)
+            {
+                columnEnd = ColumnsCount - 1;
+            }
+
+            var cellPos = cell.CellValue.Position;
+
+            float minXPos = cellPos.x - size.x / 2;
+            float maxXPos = cellPos.x + size.x / 2;
+            float minYPos = cellPos.y - size.y / 2;
+            float maxYPos = cellPos.y + size.y / 2;
+
+            for (int i = rowStart; i <= rowEnd; i++)
+            {
+                for (int j = columnStart; j <= columnEnd; j++)
+                {
+                    var checkingCell = GetCell(i, j);
+                    var pos = checkingCell.CellValue.Position;
+
+                    if (pos.x >= minXPos && pos.x <= maxXPos && pos.y <= maxYPos && pos.y >= minYPos)
+                    {
+                        SetCellInactive(checkingCell);
+                    }
+                }
+            }
         }
-*/
+
         public TableSpaceFinderSpreadSheet GetCopy()
         {
             var copy = new TableSpaceFinderSpreadSheet(RowsCount, ColumnsCount, _cellSize);
@@ -148,7 +197,6 @@ namespace MathUtils.Spreadsheet
             if (table is TableSpaceFinderSpreadSheet sheet)
             {
                 base.SetTheSameValues(sheet);
-                sheet.RandomActiveCells = new List<int>(RandomActiveCells);
             }
         }
 
