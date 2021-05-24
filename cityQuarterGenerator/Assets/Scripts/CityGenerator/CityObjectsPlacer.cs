@@ -12,23 +12,23 @@ namespace CityGenerator
 
         public void PlaceObjects(float x, float y, List<CityObject> objectsToPlace, AnalyzisResult analyzisResult)
         {
-            objectsToPlace.Sort((a, b) =>
-            {
-                float diff = a.objectInfo.BoundingBoxVolume - b.objectInfo.BoundingBoxVolume;
-
-                if (diff > 0)
-                {
-                    return -1;
-                }
-
-                if (diff < 0)
-
-                {
-                    return 1;
-                }
-
-                return 0;
-            });
+            /* objectsToPlace.Sort((a, b) =>
+             {
+                 float diff = a.objectInfo.BoundingBoxVolume - b.objectInfo.BoundingBoxVolume;
+ 
+                 if (diff > 0)
+                 {
+                     return 1;
+                 }
+ 
+                 if (diff < 0)
+ 
+                 {
+                     return -1;
+                 }
+ 
+                 return 0;
+             });*/
 
             minBoundsSize = analyzisResult.minBoundsSize;
 
@@ -37,17 +37,19 @@ namespace CityGenerator
             _octree = new BoundsOctree<CityElement>(new Vector3(x, analyzisResult.maxYSize, y),
                 new Vector3(x / 2, analyzisResult.maxYSize / 2, y / 2), minBoundsSize, 1f);
 
-            while (objectsToPlace.Count > 0 &&
+            int placedObjectIndex = 0;
+
+            while (placedObjectIndex < objectsToPlace.Count &&
                    _spreadsheet.lastActiveRandomCellIndex < _spreadsheet.RandomActiveCells.Count)
             {
                 bool finded = false;
                 var activeCell = _spreadsheet.GetRandomActiveCell();
 
-                CityObject objectToPlace = null;
+                int i = placedObjectIndex;
 
-                for (var i = 0; i < objectsToPlace.Count; i++)
+                for (; i < objectsToPlace.Count; i++)
                 {
-                    objectToPlace = objectsToPlace[i];
+                    var objectToPlace = objectsToPlace[i];
                     var objectTransform = objectToPlace.Object.transform;
 
                     if (!activeCell.CellValue.IsActive)
@@ -77,21 +79,24 @@ namespace CityGenerator
 
                 if (finded)
                 {
-                    objectsToPlace.Remove(objectToPlace);
+                    var t = objectsToPlace[i];
+                    objectsToPlace[i] = objectsToPlace[placedObjectIndex];
+                    objectsToPlace[placedObjectIndex] = t;
+                    placedObjectIndex++;
                 }
 
                 _spreadsheet.SetCellInactive(activeCell);
             }
 
-            foreach (var obj in objectsToPlace)
+            for (var index = placedObjectIndex; index < objectsToPlace.Count; index++)
             {
-                obj.Object.transform.position = Vector3.one * 1000;
+                Object.Destroy(objectsToPlace[index].Object);
             }
         }
 
         private void CreateSpreadSheet(float x, float y, int objectsCount)
         {
-            float cellSize = 1 / (Mathf.Sqrt(x * y) * (objectsCount / 200f + 1));
+            float cellSize = 1 / Mathf.Pow(x * y * objectsCount, 0.2f);
             int rowsCount = (int) (x / cellSize);
             int columnsCount = (int) (y / cellSize);
 
